@@ -31,7 +31,6 @@ void loop() {
       analogWrite(GLED, 255);
       analogWrite(RLED, 0);
       analogWrite(BLED, 255);
-      delay(1000);
       Serial.write("ok");
     }
     else{

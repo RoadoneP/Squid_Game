@@ -3,6 +3,8 @@ import numpy as np
 import serial
 import time
 import threading
+import random
+from playsound import playsound
 
 # 영희의 상태
 robot_status = 'blind' # (blind, speaking, looking)
@@ -13,7 +15,7 @@ MOVE_THRESHOLD = 2000
 # 아두이노(영희) 메시지
 def send_Younghee():
     younghee.write(robot_status.encode())
-    time.sleep(0.5)
+    time.sleep(0.2)
     msg = younghee.readline().decode('ascii')
     return msg
 
@@ -30,14 +32,16 @@ def start_blind():
         print("blind end")
         start_speaking()
 
-# 영희 스피커 작동 명령
+# 스피커 작동 명령
 def start_speaking():
     global robot_status
     robot_status = 'speaking'
-    msg = send_Younghee()
-    if msg == 'ok':
-        print("speaking end")
-        start_looking()
+    rand_sound = random.randint(1, 6)
+    sound_path = "./sound/squid_game_" + str(rand_sound) + ".mp3" 
+    playsound(sound_path)
+    print("speaking end")
+    start_looking()
+
 
 # 영희 모터 회전 및 감지시작
 def start_looking():
@@ -89,7 +93,7 @@ def Webcam():
 
 if __name__ == "__main__":
     younghee = serial.Serial('COM6', 9600)
-    younghee.timeout = 10
+    younghee.timeout = 1
     time.sleep(5) # 연결 시간을 기다려줘야 함
 
     t = threading.Thread(target=Webcam)
