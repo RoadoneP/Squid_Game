@@ -1,5 +1,12 @@
 import cv2
 import numpy as np
+import keyboard
+
+def restart():
+    while True:
+        if keyboard.read_key() == "p":
+            break
+
 
 cap = cv2.VideoCapture(0)
 
