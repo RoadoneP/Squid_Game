@@ -18,7 +18,6 @@ player_status ='alive' # (alive, dead)
 MOVE_THRESHOLD = 500
 cx = 0
 cy = 0
-flag = True
 P1 = 320
 P2 = 240
 ALPHA = 20
@@ -26,11 +25,10 @@ BETA = 15
 
 # 아두이노(영희) 메시지
 def send_Younghee():
-    pass
-    # younghee.write(robot_status.encode())
-    # time.sleep(0.2)
-    # msg = younghee.readline().decode('ascii')
-    # return msg
+    younghee.write(robot_status.encode())
+    time.sleep(0.2)
+    msg = younghee.readline().decode('ascii')
+    return msg
 
 def y_degree(cy_fix):
     accel = abs(cy_fix-P2)//15
@@ -73,31 +71,22 @@ def send_laser():
                     # msg = motor.readline().decode('ascii')
                     
 
-    # msg_gun = motor.readline().decode('ascii')
-    # if msg_gun == 'ok':
-    #     playsound('./sound/gun_sound.mp3')
-    #     return
-    
 
 # 영희 모터 회전 명령 led 녹색
 def start_blind():
     global robot_status
     robot_status = 'blind'
-    time.sleep(2)
-    # msg = send_Younghee()
-    # if msg == 'ok':
-    #     # print("blind end")
-    start_speaking()
+    msg = send_Younghee()
+    if msg == 'ok':
+        start_speaking()
 
 # 스피커 작동 명령
 def start_speaking():
     global robot_status
     robot_status = 'speaking'
-    time.sleep(3)
-    # rand_sound = random.randint(1, 6)
-    # sound_path = "./sound/squid_game_" + str(rand_sound) + ".mp3" 
-    # playsound(sound_path)
-    # # print("speaking end")
+    rand_sound = random.randint(1, 6)
+    sound_path = "./sound/squid_game_" + str(rand_sound) + ".mp3" 
+    playsound(sound_path)
     start_looking()
 
 
@@ -105,17 +94,16 @@ def start_speaking():
 def start_looking():
     global robot_status
     robot_status = 'looking'
-    send_laser()
-    # msg = send_Younghee()
-    # # 아두이노의 응답 & player가 살아있는 경우
-    # time.sleep(3)
-    # if msg == 'ok' and player_status == 'alive':
-    #     # print("looking end")
-    #     start_blind()
-    # # 아두이노의 응답 & player가 죽은 경우    
-    # elif msg =='ok' and player_status == 'dead':
-    #     robot_status = 'game over'
-    #     send_laser()
+    msg = send_Younghee()
+    # 아두이노의 응답 & player가 살아있는 경우
+    time.sleep(3)
+    if msg == 'ok' and player_status == 'alive':
+        # print("looking end")
+        start_blind()
+    # 아두이노의 응답 & player가 죽은 경우    
+    elif msg =='ok' and player_status == 'dead':
+        robot_status = 'game over'
+        send_laser()
         
 
 # 웹캠 및 움직임 감지
@@ -179,9 +167,9 @@ if __name__ == "__main__":
     t = threading.Thread(target=Webcam)
     t.start()
 
-    # younghee = serial.Serial('/dev/ttyACM1', 9600)
-    # younghee.timeout = 1
-    motor = serial.Serial('/dev/ttyACM0', 9600)
+    younghee = serial.Serial('/dev/ttyACM0', 9600)
+    younghee.timeout = 1
+    motor = serial.Serial('/dev/ttyACM1', 9600)
     motor.timeout = 5
     time.sleep(5) # 연결 시간을 기다려줘야 함
 
